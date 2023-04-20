@@ -33,4 +33,4 @@ jobs:
     - name: Run frontend tests
       run: |
         cd streamlit_frontend
-        streamlit run tests/test_app.py
+        python run tests/test_app.py

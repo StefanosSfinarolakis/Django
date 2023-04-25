@@ -1,21 +1,21 @@
 import cv2
 import numpy as np
-from load_image import load_image
 
-def calculate_height_map(file_path):
-    # Load the input image
-    img = load_image(file_path, 0)
+def generate_height_map(image):
+    # Convert the image to grayscale
+    gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
 
-    # Normalize the gradient values to the range [0, 1]
-    img = cv2.normalize(img, None, 0, 1, cv2.NORM_MINMAX)
+    # Apply Sobel edge detection in the x and y directions
+    sobel_x = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)
+    sobel_y = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)
 
-    # Invert the image
-    img = 1.0 - img
+    # Compute the gradient magnitude
+    magnitude = np.sqrt(sobel_x**2 + sobel_y**2)
 
-    # Calculate the height map by scaling the image values
-    height_map = img * 255
+    # Normalize the magnitude to the range [0, 255]
+    normalized_magnitude = cv2.normalize(magnitude, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
 
-    # Convert the height map to a 8-bit unsigned integer
-    height_map = height_map.astype(np.uint8)
-    
-    return height_map
+    # Invert the image so that white areas correspond to higher heights
+    inverted = cv2.bitwise_not(normalized_magnitude)
+
+    return inverted

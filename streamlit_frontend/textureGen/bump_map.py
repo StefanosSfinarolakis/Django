@@ -1,30 +1,37 @@
 import cv2
 import numpy as np
-from load_image import load_image
 
-def calculate_bump_map(file_path):
-    # Load the input image
-    img = load_image(file_path, 0)
-    img = cv2.normalize(img, None, 0, 1, cv2.NORM_MINMAX)
 
-    # Invert the image
-    img = 1.0 - img
+def generate_bump_map(image):
+    """
+    Generates a bump map from an input image.
+    """
+    # Convert image to grayscale
+    grayscale = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
 
-    # Calculate the gradient in the x and y directions
-    dx = cv2.Sobel(img, cv2.CV_32F, 1, 0, ksize=3)
-    dy = cv2.Sobel(img, cv2.CV_32F, 0, 1, ksize=3)
+    # Calculate the gradient of the grayscale image
+    gradient_x = cv2.Sobel(grayscale, cv2.CV_64F, 1, 0)
+    gradient_y = cv2.Sobel(grayscale, cv2.CV_64F, 0, 1)
 
-    # Normalize the gradient values to the range [-1, 1]
-    dx = cv2.normalize(dx, None, -1, 1, cv2.NORM_MINMAX)
-    dy = cv2.normalize(dy, None, -1, 1, cv2.NORM_MINMAX)
-    
-    # Calculate the bump map
-    bump_map = np.dstack((dx, dy, np.zeros_like(dx)))
+    # Normalize the gradient
+    magnitude = np.sqrt(gradient_x**2 + gradient_y**2)
+    gradient_x /= magnitude
+    gradient_y /= magnitude
 
-    # Normalize the bump map values to the range [0, 255]
-    bump_map = cv2.normalize(bump_map, None, 0, 255, cv2.NORM_MINMAX)
+    # Adjust the range of the gradient to [0, 255]
+    gradient_x = 0.5 * (gradient_x + 1.0) * 255
+    gradient_y = 0.5 * (gradient_y + 1.0) * 255
 
-    # Convert the bump map to a 8-bit unsigned integer
+    # Apply a Sobel filter to the grayscale image to calculate the edges
+    edges = cv2.Sobel(grayscale, cv2.CV_64F, 1, 1)
+
+    # Combine the edges and the gradient to create a bump map
+    bump_map = np.sqrt(edges**2 + gradient_x**2 + gradient_y**2)
+
+    # Normalize the bump map to [0, 255]
+    bump_map = (bump_map / bump_map.max()) * 255
+
+    # Convert the bump map to an 8-bit image and return it
     bump_map = bump_map.astype(np.uint8)
-    
     return bump_map
+

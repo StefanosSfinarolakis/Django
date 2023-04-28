@@ -1,61 +1,93 @@
 import streamlit as st
-import requests
 from PIL import Image
+import numpy as np
+import requests
 from io import BytesIO
+from textureGen import height_map, normals_map, bump_map, ambient_occlusion_map
 
-BASE_URL = "http://localhost:8000/"
-UPLOAD_URL = BASE_URL + "image-upload/"
+# Title of the app
+st.title("Image Maps Generator")
 
-# Define the Streamlit app pages
-def upload_page():
-    st.title("Upload Image")
-    st.write("Please upload an image file")
+# URL of the Django app
+django_url = "http://localhost:8000/"
 
-    # Allow the user to upload an image
-    uploaded_file = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png"])
+# Define the options for the dropdown menu
+options = ["Select category", "Floor", "Terrain", "Metal", "Other"]
 
-    if uploaded_file is not None:
-        # Open the uploaded image
-        image = Image.open(BytesIO(uploaded_file.read()))
+# Upload an image
+uploaded_image = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
-        # Display the uploaded image
-        st.image(image, caption="Uploaded image", use_column_width=True)
+# Check if an image was uploaded
+if uploaded_image is not None:
+    # Display the uploaded image
+    image = Image.open(uploaded_image)
+    st.image(image, caption="Uploaded Image", use_column_width=True)
 
-        # Allow the user to enter image information
+    # Add a dropdown menu for selecting the category
+    category = st.selectbox("Select category", options)
+
+    # If the user has selected "Other", display a text input for a new category
+    if category == "Other":
+        category = st.text_input("Enter new category")
+
+    # If the user has selected a category, display the form
+    if category != "Select category":
         name = st.text_input("Name")
-        caption = st.text_area("Caption")
-        category = st.text_input("Category")
-
-        # Allow the user to submit the image and information to the Django app
+        caption = st.text_input("Caption")
         if st.button("Submit"):
+            # Convert the image to a file-like object
+            img_bytes = BytesIO()
+            image.save(img_bytes, format='JPEG')
+            img_bytes.seek(0)
+
+            # Submit the form data and the image to the Django app
             data = {
                 "name": name,
+                "category": category,
                 "caption": caption,
-                "category": category
             }
-            files = {
-                "image": uploaded_file.getvalue()
-            }
-            response = requests.post(UPLOAD_URL, data=data, files=files)
+            files = {"image": ("image.jpg", img_bytes)}
+            response = requests.post(django_url + "image-upload/", data=data, files=files)
 
-            if response.status_code == 200:
-                st.success("Image uploaded successfully!")
+            # Display the response from the Django app
+            if response.ok:
+                st.success("Image Map created!")
             else:
-                st.error("Error uploading image")
+                st.error("Failed to create Image Map")
 
-def view_page():
-    st.title("View Images")
-    st.write("This page is under construction.")
 
-# Define the Streamlit app navigation
-app_pages = {
-    "Upload": upload_page,
-    "View": view_page
-}
 
-# Define the Streamlit app sidebar
-st.sidebar.title("Navigation")
-selection = st.sidebar.radio("Go to", list(app_pages.keys()), index=0)
+    # Sidebar menu to select the maps to generate
+    st.sidebar.title("Select Maps")
+    height_map_checkbox = st.sidebar.checkbox("Height Map")
+    normals_map_checkbox = st.sidebar.checkbox("Normals Map")
+    bump_map_checkbox = st.sidebar.checkbox("Bump Map")
+    ambient_occlusion_map_checkbox = st.sidebar.checkbox("Ambient Occlusion Map")
 
-# Run the Streamlit app
-app_pages[selection]()
+    # Generate and display the selected maps
+    if st.button("Generate Maps"):
+        # Convert the image to a numpy array
+        img_array = np.array(image)
+
+        # Generate the height map
+        if height_map_checkbox:
+            height = height_map.generate_height_map(img_array)
+            st.image(height, caption="Height Map", use_column_width=True)
+
+        # Generate the normals map
+        if normals_map_checkbox:
+            normals = normals_map.generate_normal_map(img_array)
+            st.image(normals, caption="Normals Map", use_column_width=True)
+
+        # Generate the bump map
+        if bump_map_checkbox:
+            bump = bump_map.generate_bump_map(img_array)
+            st.image(bump, caption="Bump Map", use_column_width=True)
+
+        # Generate the ambient occlusion map
+        if ambient_occlusion_map_checkbox:
+             ao = ambient_occlusion_map.generate_ambient_occlusion_map(img_array,0.5)
+             st.image(ao, caption="Ambient Occlusion Map", use_column_width=True)
+
+else:
+    st.warning("Please upload an image")

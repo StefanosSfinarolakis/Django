@@ -16,6 +16,22 @@ if uploaded_image is not None:
     image = Image.open(uploaded_image)
     st.image(image, caption="Uploaded Image", use_column_width=True)
 
+        # Define the options for the dropdown menu
+    options = ["Select category", "Floor", "Terrain", "Metal", "Other"]
+
+    # Add a dropdown menu for selecting the category
+    category = st.selectbox("Select category", options)
+   
+    # If the user has selected "Other", display a text input for a new category
+    if category == "Other":
+        category = st.text_input("Enter new category")
+
+    # If the user has selected a category, display the form
+    if category != "Select category":
+        name = st.text_input("Name")
+        caption = st.text_input("Caption")
+        category = st.write(f"Category: {category}")
+
     # Sidebar menu to select the maps to generate
     st.sidebar.title("Select Maps")
     height_map_checkbox = st.sidebar.checkbox("Height Map")

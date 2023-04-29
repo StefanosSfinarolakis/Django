@@ -5,6 +5,8 @@ import requests
 from io import BytesIO
 from textureGen import height_map, normals_map, bump_map, ambient_occlusion_map
 
+generated_images = []
+
 # Title of the app
 st.title("Image Maps Generator")
 
@@ -51,6 +53,8 @@ if uploaded_image is not None:
 
             # Display the response from the Django app
             if response.ok:
+                parent_image_id = response.json()["id"]
+                print(response.content)###
                 st.success("Image Map created!")
             else:
                 st.error("Failed to create Image Map")
@@ -64,30 +68,40 @@ if uploaded_image is not None:
     bump_map_checkbox = st.sidebar.checkbox("Bump Map")
     ambient_occlusion_map_checkbox = st.sidebar.checkbox("Ambient Occlusion Map")
 
+    #generated_images = []
+
     # Generate and display the selected maps
     if st.button("Generate Maps"):
         # Convert the image to a numpy array
         img_array = np.array(image)
 
+       # generated_images = []
+
         # Generate the height map
         if height_map_checkbox:
             height = height_map.generate_height_map(img_array)
             st.image(height, caption="Height Map", use_column_width=True)
+            generated_images.append(("height_map", height))
 
         # Generate the normals map
         if normals_map_checkbox:
             normals = normals_map.generate_normal_map(img_array)
             st.image(normals, caption="Normals Map", use_column_width=True)
+            generated_images.append(("normals_map", normals))
 
         # Generate the bump map
         if bump_map_checkbox:
             bump = bump_map.generate_bump_map(img_array)
             st.image(bump, caption="Bump Map", use_column_width=True)
+            generated_images.append(("bump_map", bump))
 
         # Generate the ambient occlusion map
         if ambient_occlusion_map_checkbox:
-             ao = ambient_occlusion_map.generate_ambient_occlusion_map(img_array,0.5)
-             st.image(ao, caption="Ambient Occlusion Map", use_column_width=True)
+            ao = ambient_occlusion_map.generate_ambient_occlusion_map(img_array, 0.5)
+            st.image(ao, caption="Ambient Occlusion Map", use_column_width=True)
+            generated_images.append(("ambient_occlusion_map", ao))
+        #print(generated_images)###
+        #######WE TRY
 
 else:
     st.warning("Please upload an image")

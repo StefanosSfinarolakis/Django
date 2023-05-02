@@ -23,27 +23,34 @@ def show_image_list():
     if len(image_list) > 0:
         st.write("## List of Uploaded Images")
         for image in image_list:
-            st.write("- **Name:**", image["name"])
+            st.image(BASE_URL + image["image"], use_column_width=True)
+            st.write(" **Name:**", image["name"])
             st.write("  **Caption:**", image["caption"])
             st.write("  **Category:**", image["category"])
-            st.image(BASE_URL + image["image"], use_column_width=True)
     else:
         st.write("No images uploaded yet.")
 
 def load_view():
-    add_selectbox = st.sidebar.selectbox(
-    "Select Category",
-    ("1", "2","3")
-    )
+    count=0 
+    add_selectbox = st.sidebar.selectbox("Select Category",("All","Floor","Terrain","Metal","Other"))
 
-    if add_selectbox == "1":
+    if add_selectbox == "All":
         show_image_list()
 
-    elif add_selectbox == "2":
-        show_image_list()
-
-    elif add_selectbox == "3":
-        show_image_list()
+    else:
+        image_list = get_image_list()
+        if len(image_list) > 0:
+            st.write("## List of Uploaded Images")
+            for image in image_list:
+                if image["category"]==add_selectbox:
+                    count+=1
+                    st.image(BASE_URL + image["image"], use_column_width=True)
+                    st.write(" **Name:**", image["name"])
+                    st.write("  **Caption:**", image["caption"])
+                    st.write("  **Category:**", image["category"])
+            if count==0:
+                st.write("No images in this category.")
 
 if __name__ == '__main__':
     load_view()
+            

@@ -29,3 +29,21 @@ def show_image_list():
             st.image(BASE_URL + image["image"], use_column_width=True)
     else:
         st.write("No images uploaded yet.")
+
+def load_view():
+    add_selectbox = st.sidebar.selectbox(
+    "Select Category",
+    ("1", "2","3")
+    )
+
+    if add_selectbox == "1":
+        show_image_list()
+
+    elif add_selectbox == "2":
+        show_image_list()
+
+    elif add_selectbox == "3":
+        show_image_list()
+
+if __name__ == '__main__':
+    load_view()

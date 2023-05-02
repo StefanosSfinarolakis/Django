@@ -23,10 +23,13 @@ def show_image_list():
     if len(image_list) > 0:
         st.write("## List of Uploaded Images")
         for image in image_list:
-            st.image(BASE_URL + image["image"], use_column_width=True)
-            st.write(" **Name:**", image["name"])
-            st.write("  **Caption:**", image["caption"])
-            st.write("  **Category:**", image["category"])
+            image_url = BASE_URL + image["image"]
+            image_data = requests.get(image_url).content
+            st.image(image_url, use_column_width=True)
+            st.download_button(label="Download", data=image_data, file_name=image["name"]+".jpg", mime="image/png")
+            st.write(" Name:", image["name"])
+            st.write("  Caption:", image["caption"])
+            st.write("  Category:", image["category"])
     else:
         st.write("No images uploaded yet.")
 

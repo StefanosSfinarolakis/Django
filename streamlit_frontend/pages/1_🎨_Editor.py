@@ -105,3 +105,10 @@ if uploaded_image is not None:
 
 else:
     st.warning("Please upload an image")
+
+# Gallery redirect
+st.subheader("or select from our Gallery")
+if st.button("Click me!"):
+    js = f"window.location.href='http://localhost:8501/Gallery'"
+    html = f"<head><meta http-equiv='refresh' content='0; URL=http://localhost:8501/Gallery' /></head>"
+    st.markdown(html, unsafe_allow_html=True)

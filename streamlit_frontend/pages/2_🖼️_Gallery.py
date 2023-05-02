@@ -23,9 +23,37 @@ def show_image_list():
     if len(image_list) > 0:
         st.write("## List of Uploaded Images")
         for image in image_list:
-            st.write("- **Name:**", image["name"])
-            st.write("  **Caption:**", image["caption"])
-            st.write("  **Category:**", image["category"])
-            st.image(BASE_URL + image["image"], use_column_width=True)
+            image_url = BASE_URL + image["image"]
+            image_data = requests.get(image_url).content
+            st.image(image_url, use_column_width=True)
+            st.download_button(label="Download", data=image_data, file_name=image["name"]+".jpg", mime="image/png")
+            st.write(" Name:", image["name"])
+            st.write("  Caption:", image["caption"])
+            st.write("  Category:", image["category"])
     else:
         st.write("No images uploaded yet.")
+
+def load_view():
+    count=0 
+    add_selectbox = st.sidebar.selectbox("Select Category",("All","Floor","Terrain","Metal","Other"))
+
+    if add_selectbox == "All":
+        show_image_list()
+
+    else:
+        image_list = get_image_list()
+        if len(image_list) > 0:
+            st.write("## List of Uploaded Images")
+            for image in image_list:
+                if image["category"]==add_selectbox:
+                    count+=1
+                    st.image(BASE_URL + image["image"], use_column_width=True)
+                    st.write(" **Name:**", image["name"])
+                    st.write("  **Caption:**", image["caption"])
+                    st.write("  **Category:**", image["category"])
+            if count==0:
+                st.write("No images in this category.")
+
+if __name__ == '__main__':
+    load_view()
+            

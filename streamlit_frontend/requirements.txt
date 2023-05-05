@@ -1,6 +1,6 @@
-streamlit==1.4.0
-numpy==1.21.4
-Pillow==9.4.0
-opencv-python==4.5.4.58
-requests==2.26.0
-protobuf==3.20.0
+streamlit
+numpy
+Pillow
+opencv-python
+requests
+protobuf

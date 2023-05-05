@@ -3,7 +3,8 @@ from PIL import Image
 import numpy as np
 import requests
 from io import BytesIO
-from textureGen import height_map, normals_map, bump_map, ambient_occlusion_map
+from textureGen import height_map, normals_map, bump_map, ambient_occlusion_map, displacement_map, diffusion_map 
+import base64
 
 generated_images = []
 
@@ -67,11 +68,19 @@ if uploaded_image is not None:
     normals_map_checkbox = st.sidebar.checkbox("Normals Map")
     bump_map_checkbox = st.sidebar.checkbox("Bump Map")
     ambient_occlusion_map_checkbox = st.sidebar.checkbox("Ambient Occlusion Map")
-
+    displacement_map_checkbox = st.sidebar.checkbox("Displacement Map")
+    diffusion_map_checkbox = st.sidebar.checkbox("Diffusion Map")
     #generated_images = []
 
     # Generate and display the selected maps
     if st.button("Generate Maps"):
+        def get_image_download_link(img, filename, text):
+            pil_img = Image.fromarray(np.uint8(img))
+            buffered = BytesIO()
+            pil_img.save(buffered, format="JPEG", quality=100)
+            img_str = base64.b64encode(buffered.getvalue()).decode()
+            href = f'<a href="data:file/jpg;base64,{img_str}" download="{filename}">{text}</a>'
+            return href
         # Convert the image to a numpy array
         img_array = np.array(image)
 
@@ -82,6 +91,9 @@ if uploaded_image is not None:
             height = height_map.generate_height_map(img_array)
             st.image(height, caption="Height Map", use_column_width=True)
             generated_images.append(("height_map", height))
+            # Add a download button for the generated texture maps
+            for map_type, image in generated_images:
+                st.markdown(get_image_download_link(image, f"{name}_{map_type}.jpg", f"Download {map_type.capitalize()} Map"), unsafe_allow_html=True)
 
         # Generate the normals map
         if normals_map_checkbox:
@@ -100,9 +112,17 @@ if uploaded_image is not None:
             ao = ambient_occlusion_map.generate_ambient_occlusion_map(img_array, 0.5)
             st.image(ao, caption="Ambient Occlusion Map", use_column_width=True)
             generated_images.append(("ambient_occlusion_map", ao))
-        #print(generated_images)###
-        #######WE TRY
+            # Generate the displacement map
+        if displacement_map_checkbox:
+            displacement_map = displacement_map.generate_displacement_map(img_array)
+            st.image(displacement_map, caption="Displacement Map", use_column_width=True)
+            generated_images.append(("displacement_map", displacement_map))
 
+        # Generate the diffusion map
+        if diffusion_map_checkbox:
+            diffusion_map = diffusion_map.generate_diffusion_map(img_array)
+            st.image(diffusion_map, caption="Diffusion Map", use_column_width=True)
+            generated_images.append(("diffusion_map", diffusion_map))
 else:
     st.warning("Please upload an image")
 

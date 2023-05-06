@@ -25,8 +25,9 @@ def show_image_list():
         for image in image_list:
             image_url = BASE_URL + image["image"]
             image_data = requests.get(image_url).content
+            key = f"{image['name']}-{image['caption']}"
             st.image(image_url, use_column_width=True)
-            st.download_button(label="Download", data=image_data, file_name=image["name"]+".jpg", mime="image/png")
+            st.download_button(label="Download", data=image_data, file_name=image["name"]+".jpg", mime="image/png", key=key)
             st.write(" Name:", image["name"])
             st.write("  Caption:", image["caption"])
             st.write("  Category:", image["category"])
@@ -47,10 +48,14 @@ def load_view():
             for image in image_list:
                 if image["category"]==add_selectbox:
                     count+=1
-                    st.image(BASE_URL + image["image"], use_column_width=True)
-                    st.write(" **Name:**", image["name"])
-                    st.write("  **Caption:**", image["caption"])
-                    st.write("  **Category:**", image["category"])
+                    image_url = BASE_URL + image["image"]
+                    image_data = requests.get(image_url).content
+                    key = f"{image['name']}-{image['caption']}"
+                    st.image(image_url, use_column_width=True)
+                    st.download_button(label="Download", data=image_data, file_name=image["name"]+".jpg", mime="image/png", key=key)
+                    st.write(" Name:", image["name"])
+                    st.write("  Caption:", image["caption"])
+                    st.write("  Category:", image["category"])
             if count==0:
                 st.write("No images in this category.")
 

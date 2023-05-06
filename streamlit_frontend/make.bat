@@ -100,10 +100,10 @@ echo Clean complete.
 goto :End
 
 :StartServer
-echo Starting Django server...
+echo Starting Streamlit server...
 call %VENV_NAME%\Scripts\activate.bat
 docker-compose -f %DOCKER_COMPOSE% up -d
-python manage.py runserver
+streamlit run ImageWeave.py
 goto :End
 
 :StopServer

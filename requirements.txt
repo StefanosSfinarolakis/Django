@@ -9,3 +9,7 @@ streamlit
 numpy
 requests
 click
+sphinx
+sphinx_rtd_theme
+sphinx.ext.autodoc
+sphinx.ext.napoleon

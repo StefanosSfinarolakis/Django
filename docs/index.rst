@@ -10,7 +10,8 @@ Welcome to ImageWeave's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-
+   front-end
+   back-end
 
 Indices and tables
 ==================

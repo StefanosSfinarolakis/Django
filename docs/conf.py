@@ -10,16 +10,17 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+#sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('../django_backend/core/'))
 
 
 # -- Project information -----------------------------------------------------
 
 project = 'ImageWeave'
-copyright = '2023, Kafteranis Konstantinos, Trypakis Nicolaos, Moutzikos Stergios, Sfinarolakis Stefanos'
-author = 'Kafteranis Konstantinos, Trypakis Nicolaos, Moutzikos Stergios, Sfinarolakis Stefanos'
+copyright = '2023, Kafteranis Konstantinos, Trypakis Nicolaos, Sfinarolakis Stefanos'
+author = 'Kafteranis Konstantinos, Trypakis Nicolaos, Sfinarolakis Stefanos'
 
 
 # -- General configuration ---------------------------------------------------
@@ -27,7 +28,7 @@ author = 'Kafteranis Konstantinos, Trypakis Nicolaos, Moutzikos Stergios, Sfinar
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon'
 ]
 
 # Add any paths that contain templates here, relative to this directory.

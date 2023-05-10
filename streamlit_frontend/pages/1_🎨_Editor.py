@@ -100,29 +100,45 @@ if uploaded_image is not None:
             normals = normals_map.generate_normal_map(img_array)
             st.image(normals, caption="Normals Map", use_column_width=True)
             generated_images.append(("normals_map", normals))
-
+            # Add a download button for the generated texture maps
+            for map_type, image in generated_images:
+                st.markdown(get_image_download_link(image, f"{name}_{map_type}.jpg", f"Download {map_type.capitalize()} Map"), unsafe_allow_html=True)
+                
         # Generate the bump map
         if bump_map_checkbox:
             bump = bump_map.generate_bump_map(img_array)
             st.image(bump, caption="Bump Map", use_column_width=True)
             generated_images.append(("bump_map", bump))
-
+            # Add a download button for the generated texture maps
+            for map_type, image in generated_images:
+                st.markdown(get_image_download_link(image, f"{name}_{map_type}.jpg", f"Download {map_type.capitalize()} Map"), unsafe_allow_html=True)
+                
         # Generate the ambient occlusion map
         if ambient_occlusion_map_checkbox:
             ao = ambient_occlusion_map.generate_ambient_occlusion_map(img_array, 0.5)
             st.image(ao, caption="Ambient Occlusion Map", use_column_width=True)
             generated_images.append(("ambient_occlusion_map", ao))
+            # Add a download button for the generated texture maps
+            for map_type, image in generated_images:
+                st.markdown(get_image_download_link(image, f"{name}_{map_type}.jpg", f"Download {map_type.capitalize()} Map"), unsafe_allow_html=True)
+                
             # Generate the displacement map
         if displacement_map_checkbox:
             displacement_map = displacement_map.generate_displacement_map(img_array)
             st.image(displacement_map, caption="Displacement Map", use_column_width=True)
             generated_images.append(("displacement_map", displacement_map))
+            # Add a download button for the generated texture maps
+            for map_type, image in generated_images:
+                st.markdown(get_image_download_link(image, f"{name}_{map_type}.jpg", f"Download {map_type.capitalize()} Map"), unsafe_allow_html=True)
 
         # Generate the diffusion map
         if diffusion_map_checkbox:
             diffusion_map = diffusion_map.generate_diffusion_map(img_array)
             st.image(diffusion_map, caption="Diffusion Map", use_column_width=True)
             generated_images.append(("diffusion_map", diffusion_map))
+            # Add a download button for the generated texture maps
+            for map_type, image in generated_images:
+                st.markdown(get_image_download_link(image, f"{name}_{map_type}.jpg", f"Download {map_type.capitalize()} Map"), unsafe_allow_html=True)
 else:
     st.warning("Please upload an image")
 
